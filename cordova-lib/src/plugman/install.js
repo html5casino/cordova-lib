@@ -380,39 +380,8 @@ function runInstall(actions, platform, project_dir, plugin_dir, plugins_dir, opt
             if ( !fs.existsSync(install_plugin_dir) ) {
                 copyPlugin(plugin_dir, plugins_dir, options.link, pluginInfoProvider);
             }
-
-            var projectRoot = cordovaUtil.isCordova();
-
-            if(projectRoot) {
-                // using unified hooksRunner
-                var hookOptions = {
-                    cordova: { platforms: [ platform ] },
-                    plugin: {
-                        id: pluginInfo.id,
-                        pluginInfo: pluginInfo,
-                        platform: install.platform,
-                        dir: install.top_plugin_dir
-                    },
-                    nohooks: options.nohooks
-                };
-
-                // CB-10708 This is the case when we're trying to install plugin using plugman to specific
-                // platform inside of the existing CLI project. In this case we need to put plugin's files
-                // into platform_www but plugman CLI doesn't allow us to do that, so we set it here
-                options.usePlatformWww = true;
-
-                var hooksRunner = new HooksRunner(projectRoot);
-
-                return hooksRunner.fire('before_plugin_install', hookOptions).then(function() {
-                    return handleInstall(actions, pluginInfo, platform, project_dir, plugins_dir, install_plugin_dir, filtered_variables, options);
-                }).then(function(installResult){
-                    return hooksRunner.fire('after_plugin_install', hookOptions)
-                    // CB-11022 Propagate install result to caller to be able to avoid unnecessary prepare
-                    .thenResolve(installResult);
-                });
-            } else {
-                return handleInstall(actions, pluginInfo, platform, project_dir, plugins_dir, install_plugin_dir, filtered_variables, options);
-            }
+            
+            return handleInstall(actions, pluginInfo, platform, project_dir, plugins_dir, install_plugin_dir, filtered_variables, options);
         }
     ).fail(
         function (error) {

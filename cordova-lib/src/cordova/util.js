@@ -103,32 +103,6 @@ function isRootDir(dir) {
 // IF it is found we are in a Cordova project.
 // Omit argument to use CWD.
 function isCordova(dir) {
-    if (!dir) {
-        // Prefer PWD over cwd so that symlinked dirs within your PWD work correctly (CB-5687).
-        var pwd = process.env.PWD;
-        var cwd = process.cwd();
-        if (pwd && pwd != cwd && pwd != 'undefined') {
-            return this.isCordova(pwd) || this.isCordova(cwd);
-        }
-        return this.isCordova(cwd);
-    }
-    var bestReturnValueSoFar = false;
-    for (var i = 0; i < 1000; ++i) {
-        var result = isRootDir(dir);
-        if (result === 2) {
-            return dir;
-        }
-        if (result === 1) {
-            bestReturnValueSoFar = dir;
-        }
-        var parentDir = path.normalize(path.join(dir, '..'));
-        // Detect fs root.
-        if (parentDir == dir) {
-            return bestReturnValueSoFar;
-        }
-        dir = parentDir;
-    }
-    console.error('Hit an unhandled case in util.isCordova');
     return false;
 }
 
